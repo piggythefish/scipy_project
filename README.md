@@ -6,7 +6,7 @@ This project is a Formula 1 race data visualization tool created using Python. T
 
 To use this tool, follow the steps below:
 
-1. Ensure that you have all the necessary dependencies installed. The tool requires the following packages: pandas, tkinter, numpy, matplotlib, and tkinter. You can also just use the requirements.txt file for that.
+1. Ensure that you have all the necessary dependencies installed. The tool requires the following packages: pandas, tkinter, numpy and matplotlib. You can also just use the requirements.txt file for that.
 
 2. Download or clone the repository to your local machine.
 
@@ -32,6 +32,7 @@ The project repository is organized as follows:
 
 - `data/` - This directory contains the CSV files that store the Formula 1 race data.
 - `main.py` - The main Python script for running the application and creating the GUI window.
+- `constructors_colors.py`- The python script containing the respective colors for the constructors
 - `README.md` - This file, providing an overview and instructions for the project.
 
 ## Dependencies
@@ -76,7 +77,7 @@ These plotting functions take a `race_id` parameter, which specifies the ID of t
 
 ## Color Mapping
 
-The project includes a dictionary, `constructor_colors`, which maps constructor names to specific colors. These colors are used to visually differentiate the data points in the generated plots based on the constructor of each driver. The color mapping can be customized by modifying the `constructor_colors` dictionary.
+The project includes a dictionary, `constructor_colors`, which maps constructor names to specific colors. These colors are used to visually differentiate the data points in the generated plots based on the constructor of each driver. The color mapping can be customized by modifying the `constructor_colors` dictionary in the constructors_colors.py file.
 
 ## Acknowledgements
 

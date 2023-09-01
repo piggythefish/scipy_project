@@ -3,6 +3,7 @@ import tkinter as tk
 import numpy as np
 from tkinter import ttk
 import matplotlib.pyplot as plt
+from constructor_colors import constructor_colors
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 # Read the CSV files
@@ -12,37 +13,6 @@ drivers_df = pd.read_csv('data/drivers.csv') #driverId,driverRef,number,code,for
 results_df = pd.read_csv('data/results.csv') #resultId,raceId,driverId,constructorId,number,grid,position,positionText,positionOrder,points,laps,time,milliseconds,fastestLap,rank,fastestLapTime,fastestLapSpeed,statusId
 constructors_df = pd.read_csv('data/constructors.csv') #constructorId,constructorRef,name,nationality,url
 constructors_standings_df = pd.read_csv('data/constructor_standings.csv') #constructorStandingsId,raceId,constructorId,points,position,positionText,wins
-
-# Handpicked colors for constructors
-constructor_colors = {
-    'Red Bull': 'navy',
-    'Mercedes': 'cyan',
-    'Ferrari': 'red',
-    'Alfa Romeo': 'darkred',
-    'AlphaTauri': 'lightslategrey',
-    'Williams': 'lightskyblue',
-    'McLaren': 'orange',
-    'Aston Martin': 'green',
-    'Alpine F1 Team': 'dodgerblue',
-    'Haas F1 Team': 'silver',
-    'Renault': 'gold',
-    'Toro Rosso': 'darkgrey',
-    'Force India': 'pink',
-    'Sauber': 'darkgoldenrod',
-    'Manor Marussia': 'grey',
-    'Benetton': 'dodgerblue',
-    'Jordan': 'yellow',
-    'Jaguar': 'green',
-    'Ligier': 'darkblue',
-    'Footwork': 'chocolate',
-    'Prost': 'blueviolet',
-    'Stewart': 'snow',
-    'BAR': 'lightgray',
-    'Honda': 'gainsboro',
-    'BMW Sauber': 'powderblue',
-    'Toyota': 'tomato',
-    'Brawn': 'lawngreen'
-    }
 
 # Global canvas variable that gets used across multiple function calls
 current_canvas = None
@@ -151,13 +121,13 @@ def plot_boxplot(race_id):
     for driver_id in sorted_driver_ids:
         constructor_id = driver_constructor_mapping.get(driver_id)
         constructor_name = constructor_names.get(constructor_id, 'Unknown') # set team 'Unknown' as default
-        color = constructor_colors.get(constructor_name, 'black') # set color 'black' as default
+        color = constructor_colors.get(constructor_name, 'dimgray') # set color 'dimgray' as default
         colors_to_plot.append(color)
         
     # Get the driver codes for each driver in the sorted order
     labels_to_plot = [f'{driver_codes.get(driver_id, f"Driver {driver_id}")}\n{mean}\n{median}' for driver_id, mean, median in zip(sorted_driver_ids, means, medians)]
     
-    fig, ax = plt.subplots(figsize=(15,6))
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
     bp = ax.boxplot(data_to_plot, patch_artist=True, showmeans=True, meanline=True)
     
     # Set the colors of the boxplots and style of median and mean lines
@@ -234,7 +204,7 @@ def plot_lineplot(race_id):
             driver_codes[driver_id] = surname[:3].upper()
 
     # Create a new plot
-    fig, ax = plt.subplots(figsize=(15,6))
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
     
     # Keep track of the drivers plotted for each constructor to vary the line style
     plotted_constructors = {}
@@ -251,7 +221,7 @@ def plot_lineplot(race_id):
         constructor_id = driver_constructor_mapping.get(driver_id)
         name_code = driver_codes.get(driver_id, f'Driver {driver_id}')
         constructor_name = constructor_names.get(constructor_id, 'Unknown')
-        color = constructor_colors.get(constructor_name, 'black')
+        color = constructor_colors.get(constructor_name, 'dimgrey')
 
         # Set line style based on whether this is the first or second driver for the constructor
         linestyle = '-' if constructor_id not in plotted_constructors else '--'
@@ -319,7 +289,7 @@ def plot_position_per_lap(race_id):
             driver_codes[driver_id] = surname[:3].upper()
 
     # Create a new plot
-    fig, ax = plt.subplots(figsize=(15,6))
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
 
     # Plot a line for each driver in the sorted order
     for driver_id in sorted_drivers:
@@ -331,7 +301,7 @@ def plot_position_per_lap(race_id):
         
         constructor_id = driver_constructor_mapping.get(driver_id)
         constructor_name = constructor_names.get(constructor_id, 'Unknown')
-        color = constructor_colors.get(constructor_name, 'black')
+        color = constructor_colors.get(constructor_name, 'dimgrey')
         driver_code = driver_codes.get(driver_id, 'Unknown')
         
         # Plot the driver's position per lap
@@ -409,13 +379,13 @@ def plot_drivers_standings(race_id):
     def get_team_color(driver_id):
         constructor_id = standings_df[standings_df['driverId'] == driver_id]['constructorId'].iloc[-1]
         constructor_name = constructors_df[constructors_df['constructorId'] == constructor_id]['name'].iloc[0]
-        return constructor_colors.get(constructor_name, 'black')
+        return constructor_colors.get(constructor_name, 'dimgrey')
 
     # Apply the function to get a color for each driver
     driver_points['color'] = driver_points['driverId'].apply(get_team_color)
 
     # Create a new plot
-    fig, ax = plt.subplots(figsize=(15,6))
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
     
     # Create the horizontal bar plot
     ax.barh(driver_points['code'], driver_points['points'], color=driver_points['color'])
@@ -471,13 +441,13 @@ def plot_constructor_standings(race_id):
 
     # Retrieve constructor name and color
     constructor_points['name'] = constructor_points['constructorId'].apply(lambda x: constructors_df[constructors_df['constructorId'] == x]['name'].iloc[0])
-    constructor_points['color'] = constructor_points['name'].apply(lambda x: constructor_colors.get(x, 'black'))
+    constructor_points['color'] = constructor_points['name'].apply(lambda x: constructor_colors.get(x, 'dimgrey'))
 
     # Sort by points
     constructor_points = constructor_points.sort_values('points', ascending=False)
 
     # Create a new plot
-    fig, ax = plt.subplots(figsize=(15,6))
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
     
     # Create the horizontal bar plot
     ax.barh(constructor_points['name'], constructor_points['points'], color=constructor_points['color'])
@@ -489,8 +459,7 @@ def plot_constructor_standings(race_id):
         
     # Set the title for the plot
     grand_prix_name = races_df[races_df['raceId'] == race_id]['name'].values[0]
-    grand_prix_year = races_df[races_df['raceId'] == race_id]['year'].values[0]
-    ax.set_title(f'Constructors Standings as of the {grand_prix_name} {grand_prix_year}')  
+    ax.set_title(f'Constructors Standings as of the {grand_prix_name} {season}')  
 
     # If a canvas already exists, destroy it to prevent overlap with the new plot
     if current_canvas is not None:
@@ -509,6 +478,13 @@ def plot_constructor_standings(race_id):
 # Create the main window
 root = tk.Tk()
 root.title("Formula 1 Race Data Tool")
+
+# get screen info and set size of plot
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+dpi = 120
+fig_width = screen_width / dpi  
+fig_height = screen_height / dpi
 
 # Create a label and combobox for selecting the year
 year_label = tk.Label(root, text="Select Year:")
